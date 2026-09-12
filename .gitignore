@@ -1,0 +1,19 @@
+# Секреты
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Логи бота (с ротацией: bot.log, bot.log.1, ...)
+bot.log
+bot.log.*
+
+# pytest
+.pytest_cache/
+
+# ruff
+.ruff_cache/

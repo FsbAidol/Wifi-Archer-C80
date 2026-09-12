@@ -1,0 +1,11 @@
+# Telegram-бот для TP-Link Archer C80 — зависимости
+# Установка: pip install -r requirements.txt
+
+aiogram>=3.13,<4.0          # асинхронный фреймворк Telegram Bot API
+tplinkrouterc6u>=5.30       # клиент роутеров TP-Link (класс TplinkC80Router)
+python-dotenv>=1.0          # загрузка конфигурации из .env
+
+# Транзитивные зависимости tplinkrouterc6u (указаны явно для воспроизводимости):
+requests>=2.31
+pycryptodome>=3.19
+macaddress>=1.0
