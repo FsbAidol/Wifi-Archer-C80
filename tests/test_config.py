@@ -70,6 +70,43 @@ def test_load_settings_rejects_bad_config(
         config.load_settings(env_file=None)
 
 
+def test_env_example_is_loadable() -> None:
+    """Регрессия: `.env.example` копируют дословно — он обязан проходить валидацию.
+
+    Защищает шаблон от поломки (например, `ROUTER_TIMEOUT=abc` или удалённый
+    обязательный ключ): пользователи делают `cp .env.example .env` и сразу
+    запускают бота.
+    """
+    import os
+    from pathlib import Path
+
+    example = Path(__file__).resolve().parents[1] / ".env.example"
+    assert example.exists(), "нет файла .env.example"
+
+    # Изолируемся от реального окружения, чтобы значения брались из шаблона.
+    keys = [
+        "BOT_TOKEN", "ADMIN_IDS", "ROUTER_HOST", "ROUTER_PASSWORD", "ROUTER_USERNAME",
+        "ROUTER_VERIFY_SSL", "ROUTER_TIMEOUT", "ROUTER_SESSION_TTL", "PING_COUNT",
+        "LOG_LEVEL", "LOG_FILE", "LOG_TO_CONSOLE",
+    ]
+    saved = {k: os.environ.pop(k, None) for k in keys}
+    try:
+        settings = config.load_settings(env_file=example)
+    finally:
+        for k, v in saved.items():
+            if v is not None:
+                os.environ[k] = v
+
+    # Значения шаблона разбираются в ожидаемые типы.
+    assert settings.admin_ids == frozenset({111111111, 222222222})
+    assert settings.router_host == "192.168.0.1"
+    assert settings.router_username == "admin"
+    assert settings.verify_ssl is True
+    assert settings.router_timeout == 15
+    assert settings.session_ttl == 600
+    assert settings.ping_count == 4
+
+
 def test_setup_logging_creates_file(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("BOT_TOKEN", "1:a")
     monkeypatch.setenv("ADMIN_IDS", "111")
