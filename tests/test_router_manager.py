@@ -160,6 +160,32 @@ async def test_is_supported_true() -> None:
     assert await manager.is_supported() is True
 
 
+def test_new_client_builds_real_tplink_c80_router() -> None:
+    """Регрессия: `_new_client` обязан строить настоящий TplinkC80Router.
+
+    Все прочие тесты подменяют клиент фабрикой, поэтому без этого теста
+    расхождение порядка позиционных аргументов с сигнатурой библиотеки
+    прошло бы незамеченным (в проде — падение на первом же подключении).
+    """
+    from tplinkrouterc6u import TplinkC80Router
+
+    manager = rm.RouterManager(
+        host="192.168.0.1",
+        password="secret",
+        username="admin",
+        verify_ssl=False,
+        timeout=7,
+    )
+    client = manager._new_client()  # noqa: SLF001 - намеренно проверяем внутренний путь
+
+    assert isinstance(client, TplinkC80Router)
+    assert client.host == "http://192.168.0.1"  # библиотека сама добавляет схему
+    assert client.password == "secret"
+    assert client.username == "admin"
+    assert client._verify_ssl is False  # noqa: SLF001
+    assert client.timeout == 7
+
+
 def test_resolve_band_and_aliases() -> None:
     assert rm.resolve_band("2g") is rm.BANDS["2g"]
     assert rm.resolve_band("2.4") is rm.BANDS["2g"]
