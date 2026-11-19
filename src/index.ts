@@ -1,7 +1,9 @@
 import { TelegramClient, Api } from "telegram";
 import { StringSession } from "telegram/sessions/index.js";
 import { NewMessage } from "telegram/events/index.js";
-import { machineIdSync } from "node-machine-id";
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+const { machineIdSync } = require("node-machine-id") as { machineIdSync: (original?: boolean) => string };
 import { mkdir, readFile, writeFile, chmod } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
