@@ -1,0 +1,8 @@
+{
+  "name": "openclaw-telegram-channel-commenter",
+  "private": true,
+  "type": "module",
+  "scripts": {"start": "tsx src/index.ts", "typecheck": "tsc --noEmit"},
+  "dependencies": {"telegram": "^2.26.22", "node-machine-id": "^1.1.12"},
+  "devDependencies": {"@types/node": "^22.0.0", "tsx": "^4.19.0", "typescript": "^5.7.0"}
+}
